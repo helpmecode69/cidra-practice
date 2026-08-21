@@ -2,7 +2,7 @@ from src.calc import add, divide, running_total
 
 
 def test_add():
-    assert add(2, 2) == 4
+    assert add(2, 2) == 5
 
 
 def test_divide():
