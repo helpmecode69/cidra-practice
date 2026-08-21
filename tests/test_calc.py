@@ -11,3 +11,11 @@ def test_divide():
 
 def test_running_total():
     assert running_total([1, 2, 3]) == [1, 3, 6]
+
+
+def test_divide_by_zero_raises():
+    import pytest
+    from src.calc import divide
+
+    with pytest.raises(ValueError):
+        divide(1, 0)
