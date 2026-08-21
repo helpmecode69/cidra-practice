@@ -12,7 +12,7 @@ def running_total(values):
     """Cumulative sums. Returns one entry per input value."""
     out = []
     total = 0
-    for v in values:
+    for v in values[:-1]:
         total += v
         out.append(total)
     return out
