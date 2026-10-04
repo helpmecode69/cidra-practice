@@ -7,7 +7,7 @@ on:
 
 jobs:
   repair:
-    # Key-free end-to-end test: only the cidra-e2e* branches, whose answers the stub knows.
+    # Limited to the cidra-e2e* test branches so other failing branches do not spend credits.
     if: ${{ github.event.workflow_run.conclusion == 'failure' && startsWith(github.event.workflow_run.head_branch, 'cidra-e2e') }}
     runs-on: ubuntu-latest
     permissions:
@@ -15,6 +15,10 @@ jobs:
       pull-requests: write
       issues: write
       actions: read
+    env:
+      # Spend caps for one run: requests and total tokens.
+      CIDRA_MAX_LLM_CALLS: "6"
+      CIDRA_MAX_LLM_TOKENS: "30000"
 
     steps:
       # The commit whose CI failed, not the default branch's tip
@@ -23,21 +27,12 @@ jobs:
           ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0
 
-      # A stub LLM with canned answers stands in for the model: no API key.
-      - name: Start stub LLM
-        run: |
-          base=https://raw.githubusercontent.com/abhishekKokadwar/CIDRA/main
-          curl -fsSL "$base/scripts/fake_llm.py" -o "$RUNNER_TEMP/fake_llm.py"
-          curl -fsSL "$base/eval/fixtures/F-02b/fake_llm.json" -o "$RUNNER_TEMP/fake_llm.json"
-          nohup python3 "$RUNNER_TEMP/fake_llm.py" "$RUNNER_TEMP/fake_llm.json" --port 8765 > "$RUNNER_TEMP/fake_llm.log" 2>&1 &
-          sleep 2
-
       - name: Run CIDRA
         uses: abhishekKokadwar/CIDRA@main
         with:
-          api_key: fake
-          base_url: http://127.0.0.1:8765/v1
-          model_analyze: fake
-          model_fix: fake
+          api_key: ${{ secrets.CLAUDE_API_KEY }}
+          base_url: https://api.anthropic.com/v1/
+          model_analyze: claude-haiku-4-5
+          model_fix: claude-haiku-4-5
           enable_pr_creation: 'true'
           github_token: ${{ secrets.GITHUB_TOKEN }}
