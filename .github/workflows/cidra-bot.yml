@@ -7,8 +7,8 @@ on:
 
 jobs:
   repair:
-    # Key-free end-to-end test: only the e2e branch, whose answers the stub knows.
-    if: ${{ github.event.workflow_run.conclusion == 'failure' && github.event.workflow_run.head_branch == 'cidra-e2e-test' }}
+    # Key-free end-to-end test: only the cidra-e2e* branches, whose answers the stub knows.
+    if: ${{ github.event.workflow_run.conclusion == 'failure' && startsWith(github.event.workflow_run.head_branch, 'cidra-e2e') }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
