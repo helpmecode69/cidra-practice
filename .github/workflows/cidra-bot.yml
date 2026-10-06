@@ -35,4 +35,7 @@ jobs:
           model_analyze: claude-haiku-4-5
           model_fix: claude-haiku-4-5
           enable_pr_creation: 'true'
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # A personal access token, not the built-in one: GitHub does not start
+          # workflows for a pull request opened with GITHUB_TOKEN, so the fix PR
+          # would get no CI run.
+          github_token: ${{ secrets.CIDRA_PAT }}
