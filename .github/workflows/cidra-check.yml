@@ -1,0 +1,24 @@
+name: CIDRA check
+
+# Demo of CIDRA's check-pr mode: a pull request into demo-check-pr that claims to
+# fix its failing test is checked by the gate, with no model and no key.
+on:
+  pull_request:
+    branches: [demo-check-pr]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write       # post the verdict
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0         # the base commit is needed too
+          persist-credentials: false
+      - uses: abhishekKokadwar/CIDRA@main
+        with:
+          mode: check-pr
+          # The demo's own tests; the rest of this repository needs CI secrets.
+          test_command: python -m pytest -q tests/test_discount.py 2>&1
